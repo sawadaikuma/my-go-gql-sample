@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  go:
+    container_name: my-go-gql-api
+    build: ./api
+    ports:
+      - 8080:8080
+    volumes:
+      - ./api/:/go/api/
+    working_dir: /go/api
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: localuser
+      MYSQL_PASSWORD: localpass
+      MYSQL_DATABASE: localdb
+      MYSQL_PROTOCOL: tcp(my-go-gql-db:3306)
+  db:
+    container_name: my-go-gql-db
+    restart: always
+    image: mysql:5.7.24
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: localuser
+      MYSQL_PASSWORD: localpass
+      MYSQL_DATABASE: localdb
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
